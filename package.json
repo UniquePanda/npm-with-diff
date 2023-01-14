@@ -1,0 +1,37 @@
+{
+  "name": "npm-update-diff",
+  "version": "0.1.0",
+  "description": "Shows which packages changed after a run of \"npm update\".",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config jest.config.json",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UniquePanda/npm-update-diff.git"
+  },
+  "keywords": [
+    "npm",
+    "update",
+    "diff",
+    "difference",
+    "package"
+  ],
+  "author": "Marcel Wendler (https://github.com/UniquePanda)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/UniquePanda/npm-update-diff/issues"
+  },
+  "homepage": "https://github.com/UniquePanda/npm-update-diff#readme",
+  "files": [
+    "lib/**/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.4"
+  }
+}

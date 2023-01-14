@@ -1,0 +1,8 @@
+{
+	"preset": "ts-jest",
+	"moduleFileExtensions": ["js", "ts"],
+	"transform": {
+		".*\\.(ts)$": "ts-jest"
+	},
+	"restoreMocks": true
+}
