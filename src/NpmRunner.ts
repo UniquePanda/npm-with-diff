@@ -57,6 +57,16 @@ export class NpmRunner {
 		});
 	}
 
+	performNpmUpdate(): Promise<string> {
+		return new Promise((resolve, reject) => {
+			this.runNpmCommand('update')
+				.then((output) => {
+					resolve(output);
+				})
+				.catch((error) => reject(error));
+		});
+	}
+
 	private runNpmProcess(npmCommand: string): Promise<{stdout: string, stderr: string}> {
 		return new Promise((resolve, reject) => {
 			exec(
