@@ -4,7 +4,8 @@
   "description": "Shows which packages changed after a run of \"npm update\".",
   "author": "Marcel Wendler (https://github.com/UniquePanda)",
   "license": "MIT",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "bin": {
     "npm-update-diff": "./bin/npm-update-diff.js"
   },
