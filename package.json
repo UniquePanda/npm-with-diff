@@ -5,6 +5,9 @@
   "author": "Marcel Wendler (https://github.com/UniquePanda)",
   "license": "MIT",
   "main": "index.js",
+  "bin": {
+    "npm-update-diff": "./bin/npm-update-diff.js"
+  },
   "scripts": {
     "test": "jest --config jest.config.json",
     "build": "tsc"
