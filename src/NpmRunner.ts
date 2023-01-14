@@ -1,20 +1,5 @@
 import { exec, ExecException } from 'node:child_process';
-
-interface NpmPackageList {
-	version: string,
-	name: string,
-	dependencies: NpmPackageListEntries,
-}
-
-interface NpmPackageListEntries {
-	[packageName: string]: NpmPackageListEntry;
-}
-
-interface NpmPackageListEntry {
-	version: string,
-	resolved: string,
-	overridden: boolean,
-}
+import { NpmPackageList, NpmPackageListEntry } from './Interfaces';
 
 export class NpmRunner {
 	runNpmCommand(command: string): Promise<string> {
@@ -37,19 +22,26 @@ export class NpmRunner {
 		return this.runNpmCommand('-v');
 	}
 
-	getDependencyTree(depth: number = 0, onlyTopLevel: boolean = false, includeDev: boolean = false): Promise<NpmPackageListEntries> {
+	getDependencyTree(depth: number = 0, includeDev: boolean = false): Promise<Map<string, NpmPackageListEntry>> {
 		return new Promise((resolve, reject) => {
-			let command = 'ls --json --depth=' + depth; // List dependencies in JSON format up to configured depth.
-			if (!onlyTopLevel) {
-				command += ' --all'; // Include all dependencies (not only top-level).
-			}
+			// List dependencies in JSON format up to configured depth. If depth is 0 only top-level packages are
+			// included (direct dependencies of this project).
+			let command = 'ls --all --json --depth=' + depth;
+
 			if (!includeDev) {
 				command += ' --omit=dev'; // Exclude dev dependencies.
 			}
 
 			this.runNpmCommand(command)
 				.then((output) => {
-					const outputObject: NpmPackageList = JSON.parse(output);
+					// Parse the returned JSON string and transform all dependencies into a map.
+					const outputObject: NpmPackageList = JSON.parse(output, (key, value) => {
+						if (key == 'dependencies') {
+							return new Map(Object.entries(value));
+						} else {
+							return value;
+						}
+					});
 
 					resolve(outputObject.dependencies || {});
 				})
