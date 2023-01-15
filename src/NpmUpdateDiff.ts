@@ -4,6 +4,16 @@ import { NpmRunner } from './NpmRunner';
 export class NpmUpdateDiff {
 	isDebug = false;
 
+	defaultDiff: PackageListDiff = {
+		packageName: '',
+		parentPackagesNames: [],
+		directDependenciesCount: 0,
+		wasAdded: false,
+		wasRemoved: false,
+		previousVersion: null,
+		newVersion: '',
+	};
+
 	constructor(isDebug: boolean) {
 		this.isDebug = isDebug;
 	}
@@ -13,21 +23,41 @@ export class NpmUpdateDiff {
 		newPackageListEntries: Map<string, NpmPackageListEntry>,
 		parentPackagesNames: Array<string> = []
 	) {
+		let packageListDiffs: Array<PackageListDiff> = [];
+
 		if (!oldPackageListEntries || oldPackageListEntries.size == 0) {
-			return [];
+			// If there are new entries, all of them were added.
+			for (const [newPackageName, newPackageInfo] of newPackageListEntries) {
+				packageListDiffs.push({
+					...this.defaultDiff,
+					packageName: newPackageName,
+					parentPackagesNames: parentPackagesNames.slice(),
+					directDependenciesCount: newPackageInfo.dependencies ? newPackageInfo.dependencies.size : 0,
+					wasAdded: true,
+					newVersion: newPackageInfo.version,
+				});
+			}
+
+			return packageListDiffs;
 		}
 
-		const defaultDiff = {
-			packageName: '',
-			parentPackagesNames: [],
-			directDependenciesCount: 0,
-			wasAdded: false,
-			wasRemoved: false,
-			previousVersion: '',
-			newVersion: '',
-		};
+		// First traverse all new packages and check if they were added.
+		if (newPackageListEntries) {
+			for (const [packageName, packageInfo] of newPackageListEntries) {
+				if (oldPackageListEntries.has(packageName)) {
+					continue;
+				}
 
-		let packageListDiffs: Array<PackageListDiff> = [];
+				packageListDiffs.push({
+					...this.defaultDiff,
+					packageName: packageName,
+					parentPackagesNames: parentPackagesNames.slice(),
+					directDependenciesCount: packageInfo.dependencies ? packageInfo.dependencies.size : 0,
+					wasAdded: true,
+					newVersion: packageInfo.version,
+				});
+			}
+		}
 
 		for (const [packageName, packageInfo] of oldPackageListEntries) {
 			if (this.isDebug) {
@@ -35,40 +65,20 @@ export class NpmUpdateDiff {
 			}
 
 			const newPackage = newPackageListEntries?.get(packageName);
-			const oldDependencies = packageInfo.dependencies;
-			const oldHasDependencies = !!oldDependencies;
+			const oldDependencies = packageInfo.dependencies || new Map();
 			const oldWasRemoved = !newPackage;
 	
 			packageListDiffs.push({
-				...defaultDiff,
+				...this.defaultDiff,
 				packageName: packageName,
-				parentPackagesNames: parentPackagesNames,
-				directDependenciesCount: oldHasDependencies ? oldDependencies.size : 0,
-				wasAdded: false,
+				parentPackagesNames: parentPackagesNames.slice(),
+				directDependenciesCount: oldDependencies.size,
 				wasRemoved: oldWasRemoved,
 				previousVersion: packageInfo.version,
 				newVersion: oldWasRemoved ? null : newPackage.version,
 			});
 
 			if (oldWasRemoved) {
-				continue;
-			}
-
-			if (!oldHasDependencies) {
-				// If second list has dependencies for this package, they were added.
-				if (newPackage.dependencies) {
-					for (const [addedPackageName, addedPackageInfo] of newPackage.dependencies) {
-						packageListDiffs.push({
-							packageName: addedPackageName,
-							parentPackagesNames: parentPackagesNames.concat([packageName]),
-							directDependenciesCount: addedPackageInfo.dependencies ? addedPackageInfo.dependencies.size : 0,
-							wasAdded: true,
-							wasRemoved: false,
-							previousVersion: null,
-							newVersion: addedPackageInfo.version,
-						});
-					}
-				}
 				continue;
 			}
 
@@ -137,23 +147,28 @@ export class NpmUpdateDiff {
 
 			if (packageListDiff.parentPackagesNames.length) {
 				addToDiffString += ' ('
-					+ packageListDiff.parentPackagesNames.concat([packageListDiff.packageName]).join(' -> ')
+					+ packageListDiff.parentPackagesNames.concat(['*' + packageListDiff.packageName + '*']).join(' -> ')
 					+ ')';
 			}
 
 			if (packageListDiff.wasAdded) {
 				addToDiffString += '\n';
 				addToDiffString += '\t* Was added.\n';
-				addToDiffString += '\t* Has ' + packageListDiff.directDependenciesCount + ' direct dependencies.';
+				addToDiffString += '\t* Has ' + packageListDiff.directDependenciesCount
+					+ ' direct dependencies (not listed here).';
 			}
 
 			if (packageListDiff.wasRemoved) {
 				addToDiffString += '\n';
 				addToDiffString += '\t* Was removed.\n';
-				addToDiffString += '\t* Had ' + packageListDiff.directDependenciesCount + ' direct dependencies.';
+				addToDiffString += '\t* Had ' + packageListDiff.directDependenciesCount
+					+ ' direct dependencies (not listed here).';
 			}
 
-			if (packageListDiff.previousVersion !== packageListDiff.newVersion) {
+			if (
+				!packageListDiff.wasAdded && !packageListDiff.wasRemoved
+				&& packageListDiff.previousVersion !== packageListDiff.newVersion
+			) {
 				addToDiffString += '\n';
 				addToDiffString += '\t* Was updated.\n';
 				addToDiffString += '\t* ' + packageListDiff.previousVersion + ' => ' + packageListDiff.newVersion;
