@@ -1,7 +1,7 @@
 import { NpmPackageListEntry, PackageListDiff } from './Interfaces';
 import { NpmRunner } from './NpmRunner';
 
-export class NpmRunDiff {
+export class NpmWithDiff {
 	isDebug = false;
 
 	defaultDiff: PackageListDiff = {
