@@ -51,14 +51,14 @@ export class NpmRunner {
 		});
 	}
 
-	getDependencyTree(depth: number = 0, includeDev: boolean = true): Promise<Map<string, NpmPackageListEntry>> {
+	getDependencyTree(depth: number = 0, excludeDevDpendencies: boolean = false): Promise<Map<string, NpmPackageListEntry>> {
 		return new Promise((resolve, reject) => {
 			// List dependencies in JSON format up to configured depth. If depth is 0 only top-level packages are
 			// included (direct dependencies of this project).
 			const commandArguments = ['--all', '--json', '--depth=' + depth];
 
-			if (!includeDev) {
-				commandArguments.push(' --omit=dev'); // Exclude dev dependencies.
+			if (excludeDevDpendencies) {
+				commandArguments.push(' --omit=dev');
 			}
 
 			this.runNpmCommand('ls', commandArguments)
@@ -72,7 +72,7 @@ export class NpmRunner {
 						}
 					});
 
-					resolve(outputObject.dependencies || {});
+					resolve(outputObject.dependencies || new Map());
 				})
 				.catch((error) => reject(error));
 		});

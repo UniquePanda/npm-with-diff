@@ -42,7 +42,7 @@ export class NpmWithDiff {
 		}
 
 		// First traverse all new packages and check if they were added.
-		if (newPackageListEntries) {
+		if (newPackageListEntries && newPackageListEntries.size > 0) {
 			for (const [packageName, packageInfo] of newPackageListEntries) {
 				if (oldPackageListEntries.has(packageName)) {
 					continue;
@@ -98,12 +98,14 @@ export class NpmWithDiff {
 		command: string,
 		commandArguments: Array<string> = [],
 		searchedTreeDepthForDiff: number = 20,
-		includeDevPackagesInDiff: boolean = true,
+		excludeDevPackagesFromDiff: boolean = false,
 		forceExecution: boolean = false
 	) {
 		const npmRunner = new NpmRunner();
+		const argumentsString = (command === '' ? '' : (commandArguments.length === 0 ? '' : ' ')) + commandArguments.join(' ');
+		const commandWithArgumentsString = command + argumentsString;
 
-		if (!forceExecution || command === '') {
+		if (!forceExecution && command !== '') {
 			const availableCommands = await npmRunner.getAvailableNpmCommands();
 			if (!availableCommands.includes(command)) {
 				console.error(
@@ -116,33 +118,43 @@ export class NpmWithDiff {
 			}
 		}
 
-		// Fetch current dependency tree (pre update).
-		console.log('Collecting current dependencies (before "' + command + '")...');
-		const preDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, includeDevPackagesInDiff);
+		// Fetch current dependency tree (pre command run).
+		console.log(
+			'Collecting ' + (excludeDevPackagesFromDiff ? 'non-dev ' : '')
+			+ 'dependencies (before "'
+			+ commandWithArgumentsString
+			+ '")...'
+		);
+		const preDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, excludeDevPackagesFromDiff);
 		if (this.isDebug) {
-			console.log('Pre "' + command + '" dependencies:');
+			console.log('Pre "' + commandWithArgumentsString + '" dependencies:');
 			console.log(preDependencies);
 		}
 
 		// Run command.
-		console.log('Running command "' + command + '"...');
+		console.log('Running command "' + commandWithArgumentsString + '"...');
 		const commandOutput = await npmRunner.runNpmCommand(command, commandArguments);
 		if (this.isDebug) {
-			console.log('Command "' + command + '" has run.');
+			console.log('Command "' + commandWithArgumentsString + '" has run.');
 			console.log(commandOutput);
 		}
 
-		// Fetch new dependency tree (post update).
-		console.log('Collecting current dependencies (after "' + command + '")...');
-		const postDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, includeDevPackagesInDiff);
+		// Fetch new dependency tree (post command run).
+		console.log(
+			'Collecting ' + (excludeDevPackagesFromDiff ? 'non-dev ' : '')
+			+ 'dependencies (after "'
+			+ commandWithArgumentsString
+			+ '")...'
+		);
+		const postDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, excludeDevPackagesFromDiff);
 		if (this.isDebug) {
-			console.log('Post "' + command + '" dependencies:');
+			console.log('Post "' + commandWithArgumentsString + '" dependencies:');
 			console.log(postDependencies);
 		}
 
 		const packageListDiffs = this.comparePackageListsRecursively(preDependencies, postDependencies);
 
-		console.log('Command "' + command + '" successfully finished. Command output:');
+		console.log('Command "' + commandWithArgumentsString + '" successfully finished. Command output:');
 		console.log(commandOutput);
 
 		// Iterate over all collected packageListDiffs and reduce them to the needed info.
@@ -196,7 +208,10 @@ export class NpmWithDiff {
 			diffString += addToDiffString;
 		}
 
-		console.log('The following dependencies were changed:');
-		console.log(diffString || 'Nothing has changed!');
+		console.log(
+			'The following ' + (excludeDevPackagesFromDiff ? 'non-dev ' : '')
+			+ 'dependencies were changed:'
+		);
+		console.log(diffString || 'No ' + (excludeDevPackagesFromDiff ? 'non-dev ' : '') + 'dependencies were changed!');
 	}
 }
