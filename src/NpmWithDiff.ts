@@ -94,12 +94,25 @@ export class NpmWithDiff {
 		return packageListDiffs;
 	}
 
-	async runCommandWithDiff(searchedTreeDepth: number) {
+	async runCommandWithDiff(command: string, searchedTreeDepthForDiff: number, includeDevPackagesInDiff: boolean = true, forceExecution: boolean = false) {
 		const npmRunner = new NpmRunner();
+
+		if (!forceExecution) {
+			const availableCommands = await npmRunner.getAvailableNpmCommands();
+			if (!availableCommands.includes(command)) {
+				console.error(
+					'Couldn\'t find an npm command with name "'
+					+ command
+					+ '". If you\'re sure it exists, run again with "-f" option.'
+				);
+	
+				return;
+			}
+		}
 
 		// Fetch current dependency tree (pre update).
 		console.log('Fetching current dependencies (before updating)...');
-		const preUpdateDependencies = await npmRunner.getDependencyTree(searchedTreeDepth, true);
+		const preUpdateDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, includeDevPackagesInDiff);
 		if (this.isDebug) {
 			console.log('Pre update dependencies:');
 			console.log(preUpdateDependencies);
@@ -115,7 +128,7 @@ export class NpmWithDiff {
 
 		// Fetch new dependency tree (post update).
 		console.log('Fetching current dependencies (after updating)...');
-		const postUpdateDependencies = await npmRunner.getDependencyTree(searchedTreeDepth, true);
+		const postUpdateDependencies = await npmRunner.getDependencyTree(searchedTreeDepthForDiff, includeDevPackagesInDiff);
 		if (this.isDebug) {
 			console.log('Post update dependencies:');
 			console.log(postUpdateDependencies);

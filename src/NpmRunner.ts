@@ -22,6 +22,30 @@ export class NpmRunner {
 		return this.runNpmCommand('-v');
 	}
 
+	getAvailableNpmCommands(): Promise<Array<string>> {
+		return new Promise((resolve, reject) => {
+			// I didn't find a nicer way to get a list of all npm commands other than getting them from the help text.
+			// This only works as long as there is "All commands:\n\n" in front of the command list and "\n\n" after it.
+			this.runNpmCommand('help')
+				.then((output) => {
+					const commandsString = output
+						// Get everything after "introduction" line.
+						.split('All commands:\n\n').pop()
+						// Get everything of that before the empty line.
+						?.split('\n\n')[0]
+						// Remove all whitespace.
+						.replace(/\s/g, '');
+
+					if (!commandsString) {
+						return [];
+					}
+
+					resolve(commandsString.split(','));
+				})
+				.catch((error) => reject(error));
+		});
+	}
+
 	getDependencyTree(depth: number = 0, includeDev: boolean = false): Promise<Map<string, NpmPackageListEntry>> {
 		return new Promise((resolve, reject) => {
 			// List dependencies in JSON format up to configured depth. If depth is 0 only top-level packages are
