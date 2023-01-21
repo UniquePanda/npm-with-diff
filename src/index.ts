@@ -1,9 +1,9 @@
 'use strict';
 
 const NpmRunner = require('../lib/NpmRunner').NpmRunner;
-const NpmUpdateDiff = require('../lib/NpmUpdateDiff').NpmUpdateDiff;
+const NpmRunDiff = require('../lib/NpmRunDiff').NpmRunDiff;
 
 module.exports = {
     NpmRunner,
-    NpmUpdateDiff,
+    NpmRunDiff,
 };
