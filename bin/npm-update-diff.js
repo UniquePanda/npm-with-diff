@@ -1,7 +1,12 @@
 #! /usr/bin/env node
 
-const NpmRunner = require('../lib/NpmRunner').NpmRunner;
+const NpmUpdateDiff = require('../lib/NpmUpdateDiff').NpmUpdateDiff;
 
-const npmRunner = new NpmRunner();
+const isDebug = false;
+const searchedTreeDepth = 5;
 
-npmRunner.getNpmVersion().then((version) => console.log(version));
+async function main() {
+	await (new NpmUpdateDiff(isDebug).performUpdateWithDiff(searchedTreeDepth));
+}
+
+main();
