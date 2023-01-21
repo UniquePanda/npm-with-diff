@@ -6,7 +6,7 @@ const isDebug = false;
 const searchedTreeDepth = 5;
 
 async function main() {
-	await (new NpmWithDiff(isDebug).performUpdateWithDiff(searchedTreeDepth));
+	await (new NpmWithDiff(isDebug).runCommandWithDiff(searchedTreeDepth));
 }
 
 main();

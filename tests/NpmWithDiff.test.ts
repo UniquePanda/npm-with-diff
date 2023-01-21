@@ -251,7 +251,7 @@ describe('comparePackageListsRecursively', () => {
 			]);
 	});
 
-	describe('performUpdateWithDiff', () => {
+	describe('runCommandWithDiff', () => {
 		it('Correctly prints diff after update', async () => {
 			oldPackageListEntries.set(
 				'package-level-1-1',
@@ -363,7 +363,7 @@ describe('comparePackageListsRecursively', () => {
 			const consoleLogSpy = jest.spyOn(console, 'log')
 				.mockImplementation(() => {}); // Mutes the console logs when running the test.
 
-			await npmWithDiff.performUpdateWithDiff(2);
+			await npmWithDiff.runCommandWithDiff(2);
 
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Fetching current dependencies (before updating)...');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'Performing npm update...');

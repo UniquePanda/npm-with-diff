@@ -94,7 +94,7 @@ export class NpmWithDiff {
 		return packageListDiffs;
 	}
 
-	async performUpdateWithDiff(searchedTreeDepth: number) {
+	async runCommandWithDiff(searchedTreeDepth: number) {
 		const npmRunner = new NpmRunner();
 
 		// Fetch current dependency tree (pre update).
