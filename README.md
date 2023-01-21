@@ -1,2 +1,2 @@
-# npm-update-diff
-An npm package that will show which packages changed after a run of "npm update".
+# npm-run-diff
+Use this instead of 'npm run' to get a readable diff of the dependency trees from before and after the run.

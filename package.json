@@ -1,13 +1,13 @@
 {
-  "name": "npm-update-diff",
+  "name": "npm-run-diff",
   "version": "0.1.0",
-  "description": "Shows which packages changed after a run of \"npm update\".",
+  "description": "Use this instead of 'npm run' to get a readable diff of the dependency trees from before and after the run.",
   "author": "Marcel Wendler (https://github.com/UniquePanda)",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.js",
   "bin": {
-    "npm-update-diff": "./bin/npm-update-diff.js"
+    "npm-run-diff": "./bin/npm-run-diff.js"
   },
   "scripts": {
     "test": "jest --config jest.config.json",
@@ -18,15 +18,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UniquePanda/npm-update-diff.git"
+    "url": "git+https://github.com/UniquePanda/npm-run-diff.git"
   },
   "bugs": {
-    "url": "https://github.com/UniquePanda/npm-update-diff/issues"
+    "url": "https://github.com/UniquePanda/npm-run-diff/issues"
   },
-  "homepage": "https://github.com/UniquePanda/npm-update-diff#readme",
+  "homepage": "https://github.com/UniquePanda/npm-run-diff#readme",
   "keywords": [
     "npm",
+    "run",
     "update",
+    "install",
+    "dependency",
+    "dependencies",
     "diff",
     "difference",
     "package"

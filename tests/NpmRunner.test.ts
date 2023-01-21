@@ -95,7 +95,7 @@ describe('getDependencyTree', () => {
 	it('correctly parses returned string', () => {
 		const mockedDependencyTree = {
 			version: '1.0.0',
-			name: 'npm-update-diff',
+			name: 'npm-run-diff',
 			dependencies: {
 				'dep-level-1-1': {
 					version: '1.5.0',
