@@ -1,13 +1,13 @@
 {
-  "name": "npm-run-diff",
+  "name": "npm-with-diff",
   "version": "0.1.0",
-  "description": "Use this instead of 'npm run' to get a readable diff of the dependency trees from before and after the run.",
+  "description": "Use this instead of 'npm' to get a readable diff of the dependency trees from before and after the execution of the npm command.",
   "author": "Marcel Wendler (https://github.com/UniquePanda)",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.js",
   "bin": {
-    "npm-run-diff": "./bin/npm-run-diff.js"
+    "npm-with-diff": "./bin/npm-with-diff.js"
   },
   "scripts": {
     "test": "jest --config jest.config.json",
@@ -18,14 +18,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UniquePanda/npm-run-diff.git"
+    "url": "git+https://github.com/UniquePanda/npm-with-diff.git"
   },
   "bugs": {
-    "url": "https://github.com/UniquePanda/npm-run-diff/issues"
+    "url": "https://github.com/UniquePanda/npm-with-diff/issues"
   },
-  "homepage": "https://github.com/UniquePanda/npm-run-diff#readme",
+  "homepage": "https://github.com/UniquePanda/npm-with-diff#readme",
   "keywords": [
     "npm",
+    "command",
     "run",
     "update",
     "install",

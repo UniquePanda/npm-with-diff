@@ -1,11 +1,11 @@
 import { NpmPackageListEntry } from '../src/Interfaces';
-import { NpmRunDiff } from '../src/NpmRunDiff';
+import { NpmWithDiff } from '../src/NpmWithDiff';
 import { NpmRunner } from '../src/NpmRunner';
 
-let npmRunDiff: NpmRunDiff;
+let npmWithDiff: NpmWithDiff;
 
 beforeEach(() => {
-	npmRunDiff = new NpmRunDiff(false);
+	npmWithDiff = new NpmWithDiff(false);
 });
 
 describe('comparePackageListsRecursively', () => {
@@ -26,7 +26,7 @@ describe('comparePackageListsRecursively', () => {
 
 	it('returns empty array when no old package list entries', () => {
 		// "as any" to test private function
-		expect((npmRunDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
+		expect((npmWithDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
 			.toStrictEqual([]);
 	});
 
@@ -42,7 +42,7 @@ describe('comparePackageListsRecursively', () => {
 		);
 
 		// "as any" to test private function
-		expect((npmRunDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
+		expect((npmWithDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
 			.toStrictEqual([
 				{
 					packageName: 'package-level-1-1',
@@ -74,7 +74,7 @@ describe('comparePackageListsRecursively', () => {
 		);
 
 		// "as any" to test private function
-		expect((npmRunDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
+		expect((npmWithDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
 			.toStrictEqual([
 				{
 					packageName: 'package-level-1-1',
@@ -122,7 +122,7 @@ describe('comparePackageListsRecursively', () => {
 		);
 
 		// "as any" to test private function
-		expect((npmRunDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
+		expect((npmWithDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
 			.toStrictEqual([
 				{
 					packageName: 'package-level-1-1',
@@ -192,7 +192,7 @@ describe('comparePackageListsRecursively', () => {
 		newPackageListEntries = new Map(oldPackageListEntries);
 
 		// "as any" to test private function
-		expect((npmRunDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
+		expect((npmWithDiff as any).comparePackageListsRecursively(oldPackageListEntries, newPackageListEntries))
 			.toStrictEqual([
 				{
 					packageName: 'package-level-1-1',
@@ -363,7 +363,7 @@ describe('comparePackageListsRecursively', () => {
 			const consoleLogSpy = jest.spyOn(console, 'log')
 				.mockImplementation(() => {}); // Mutes the console logs when running the test.
 
-			await npmRunDiff.performUpdateWithDiff(2);
+			await npmWithDiff.performUpdateWithDiff(2);
 
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Fetching current dependencies (before updating)...');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'Performing npm update...');
