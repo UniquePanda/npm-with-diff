@@ -12,17 +12,17 @@ beforeEach(() => {
 });
 
 describe('runNpmCommand', () => {
-	it('resolves with correct npm version string', async () => {
+	it('resolves with correct return value', async () => {
 		runNpmProcessMock.mockImplementation((npmCommand: string) => {
 			return new Promise((resolve) => {
-				resolve({ stdout: 'mocked-npm-version-string', stderr: null });
+				resolve({ stdout: 'mocked-npm-update-return-string', stderr: null });
 			});
 		});
 
-		expect(npmRunner.runNpmCommand('-v')).resolves.toBe('mocked-npm-version-string')
+		expect(npmRunner.runNpmCommand('update',)).resolves.toBe('mocked-npm-update-return-string')
 
 		expect(runNpmProcessMock).toHaveBeenCalledTimes(1);
-		expect(runNpmProcessMock).toHaveBeenCalledWith('-v');
+		expect(runNpmProcessMock).toHaveBeenCalledWith('update', []);
 	});
 
 	it('rejects when stderr is present', async () => {
@@ -32,12 +32,12 @@ describe('runNpmCommand', () => {
 			});
 		});
 
-		expect(npmRunner.runNpmCommand('-v')).rejects.toEqual(
+		expect(npmRunner.runNpmCommand('', ['-v'])).rejects.toEqual(
 			new Error('Error running "npm -v": some error string!')
 		);
 
 		expect(runNpmProcessMock).toHaveBeenCalledTimes(1);
-		expect(runNpmProcessMock).toHaveBeenCalledWith('-v');
+		expect(runNpmProcessMock).toHaveBeenCalledWith('', ['-v']);
 	});
 
 	it('rejects in case of process error', async () => {
@@ -50,12 +50,12 @@ describe('runNpmCommand', () => {
 			});
 		});
 
-		expect(npmRunner.runNpmCommand('-v')).rejects.toEqual(
+		expect(npmRunner.runNpmCommand('', ['-v'])).rejects.toEqual(
 			new Error('Error running npm process (code 99): Some process error!')
 		);
 
 		expect(runNpmProcessMock).toHaveBeenCalledTimes(1);
-		expect(runNpmProcessMock).toHaveBeenCalledWith('-v');
+		expect(runNpmProcessMock).toHaveBeenCalledWith('', ['-v']);
 	});
 });
 
@@ -67,7 +67,7 @@ describe('getNpmVersion', () => {
 		npmRunner.getNpmVersion();
 
 		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('-v');
+		expect(runNpmCommandMock).toHaveBeenCalledWith('', ['-v']);
 	});
 });
 
@@ -79,7 +79,7 @@ describe('getDependencyTree', () => {
 		npmRunner.getDependencyTree();
 
 		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('ls --all --json --depth=0 --omit=dev'); // default command
+		expect(runNpmCommandMock).toHaveBeenCalledWith('ls', ['--all', '--json', '--depth=0']);
 	});
 
 	it('correctly calls runNpmCommand with different input', () => {
@@ -89,7 +89,7 @@ describe('getDependencyTree', () => {
 		npmRunner.getDependencyTree(5, true); // depth 5, no --omit=dev
 
 		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('ls --all --json --depth=5');
+		expect(runNpmCommandMock).toHaveBeenCalledWith('ls', ['--all', '--json', '--depth=5']);
 	});
 
 	it('correctly parses returned string', () => {
@@ -196,18 +196,6 @@ describe('getDependencyTree', () => {
 		expect(npmRunner.getDependencyTree()).resolves.toEqual(expectedReturn);
 
 		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('ls --all --json --depth=0 --omit=dev'); // default command
-	});
-});
-
-describe('performNpmUpdate', () => {
-	it('correctly calls runNpmCommand', () => {
-		const runNpmCommandMock = jest.spyOn(npmRunner, 'runNpmCommand')
-			.mockImplementation((command) => Promise.resolve(command));
-
-		npmRunner.performNpmUpdate();
-
-		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('update');
+		expect(runNpmCommandMock).toHaveBeenCalledWith('ls', ['--all', '--json', '--depth=0']);
 	});
 });

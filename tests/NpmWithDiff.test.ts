@@ -251,7 +251,7 @@ describe('comparePackageListsRecursively', () => {
 			]);
 	});
 
-	describe('performUpdateWithDiff', () => {
+	describe('runCommandWithDiff', () => {
 		it('Correctly prints diff after update', async () => {
 			oldPackageListEntries.set(
 				'package-level-1-1',
@@ -358,18 +358,20 @@ describe('comparePackageListsRecursively', () => {
 			jest.spyOn(NpmRunner.prototype, 'getDependencyTree')
 				.mockReturnValueOnce(Promise.resolve(oldPackageListEntries))
 				.mockReturnValueOnce(Promise.resolve(newPackageListEntries));
-			jest.spyOn(NpmRunner.prototype, 'performNpmUpdate')
-				.mockReturnValue(Promise.resolve('Mocked update output'));
+			jest.spyOn(NpmRunner.prototype, 'runNpmCommand')
+				.mockReturnValue(Promise.resolve('Mocked command output'));
+			jest.spyOn(NpmRunner.prototype, 'getAvailableNpmCommands')
+				.mockReturnValue(Promise.resolve(['update']));
 			const consoleLogSpy = jest.spyOn(console, 'log')
 				.mockImplementation(() => {}); // Mutes the console logs when running the test.
 
-			await npmWithDiff.performUpdateWithDiff(2);
+			await npmWithDiff.runCommandWithDiff('update');
 
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Fetching current dependencies (before updating)...');
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'Performing npm update...');
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'Fetching current dependencies (after updating)...');
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(4, 'Update successfully finished. Update output:');
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(5, 'Mocked update output');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Collecting current dependencies (before \"update\")...');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'Running command \"update\"...');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'Collecting current dependencies (after \"update\")...');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(4, 'Command \"update\" successfully finished. Command output:');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(5, 'Mocked command output');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(6, 'The following dependencies were changed:');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(
 				7,
