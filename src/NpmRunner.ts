@@ -58,7 +58,7 @@ export class NpmRunner {
 			const commandArguments = ['--all', '--json', '--depth=' + depth];
 
 			if (excludeDevDpendencies) {
-				commandArguments.push(' --omit=dev');
+				commandArguments.push('--omit=dev');
 			}
 
 			this.runNpmCommand('ls', commandArguments)

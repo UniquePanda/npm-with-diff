@@ -367,9 +367,9 @@ describe('comparePackageListsRecursively', () => {
 
 			await npmWithDiff.runCommandWithDiff('update');
 
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Collecting current dependencies (before \"update\")...');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(1, 'Collecting dependencies (before \"update\")...');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(2, 'Running command \"update\"...');
-			expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'Collecting current dependencies (after \"update\")...');
+			expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'Collecting dependencies (after \"update\")...');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(4, 'Command \"update\" successfully finished. Command output:');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(5, 'Mocked command output');
 			expect(consoleLogSpy).toHaveBeenNthCalledWith(6, 'The following dependencies were changed:');

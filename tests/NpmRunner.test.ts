@@ -89,7 +89,7 @@ describe('getDependencyTree', () => {
 		npmRunner.getDependencyTree(5, true); // depth 5, no --omit=dev
 
 		expect(runNpmCommandMock).toHaveBeenCalledTimes(1);
-		expect(runNpmCommandMock).toHaveBeenCalledWith('ls', ['--all', '--json', '--depth=5']);
+		expect(runNpmCommandMock).toHaveBeenCalledWith('ls', ['--all', '--json', '--depth=5', '--omit=dev']);
 	});
 
 	it('correctly parses returned string', () => {
